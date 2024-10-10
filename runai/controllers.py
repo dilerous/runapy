@@ -32,6 +32,80 @@ class Controller(abc.ABC):
         ]
 
 
+class TemplateController(Controller):
+    def __init__(self, client):
+        super().__init__(client)
+        self.path = "/api/v1/asset/workload-template"
+        if self.client.cluster_id is None:
+            raise errors.RunaiClusterIDNotConfigured()
+
+    def all(self) -> List:
+
+        return self.client.get(self.path)
+    
+    def create(
+        self,
+        name: str,
+        scope: str,
+        assets: dict,
+    ):
+        """
+        placementStrategy example:
+        {"gpu": "binpack", "cpu": "binpack"}
+        """
+        data = {
+            "meta": {
+                "name": name,
+                "scope": scope,
+                "clusterId": "dd56cdc9-5a36-462f-80a7-1f61eb6b61a7"
+            },
+
+            "spec": {
+                "assets": assets,
+            }
+        }
+
+        template = models.build_model(models.TemplateCreateRequest, data)
+        payload = template.model_dump_json()
+
+        return self.client.post(self.path, payload)
+    
+
+class ComputeController(Controller):
+    def __init__(self, client):
+        super().__init__(client)
+        self.path = "/api/v1/asset/compute"
+        if self.client.cluster_id is None:
+            raise errors.RunaiClusterIDNotConfigured()
+
+    def all(self) -> List:
+        return self.client.get(self.path)
+    
+    def get_by_name(self, compute_name: str):
+        computes = self.all()
+
+        compute = next((entry for entry in computes['entries'] if entry['meta']['name'] == compute_name), None)
+        
+        return compute
+
+
+class EnvironmentController(Controller):
+    def __init__(self, client):
+        super().__init__(client)
+        self.path = "/api/v1/asset/environment"
+        if self.client.cluster_id is None:
+            raise errors.RunaiClusterIDNotConfigured()
+
+    def all(self) -> List:
+        return self.client.get(self.path)
+    
+    def get_by_name(self, environment_name: str):
+        environments = self.all()
+
+        environment = next((entry for entry in environments['entries'] if entry['meta']['name'] == environment_name), None)
+        
+        return environment
+
 class NodePoolController(Controller):
     def __init__(self, client):
         super().__init__(client)

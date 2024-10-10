@@ -602,6 +602,20 @@ class S3CreateRequest(BaseModel):
     spec: S3CreateRequestSpec
 
 
+class TemplateCreateRequestSpec(BaseModel):
+    environment: str
+    compute: str
+
+
+class TemplateCreateRequestAsset(BaseModel):
+    assets: TemplateCreateRequestSpec
+
+
+class TemplateCreateRequest(BaseModel):
+    meta: AssetMetaRequest
+    spec: TemplateCreateRequestAsset
+
+
 class AccessKeyRequestSpec(BaseModel):
     existingSecretName: Optional[str] = None
     accessKeyId: Optional[str] = None
