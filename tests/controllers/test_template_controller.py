@@ -112,45 +112,47 @@ class TestTemplateController:
     def test_update_bad_parameters(self, controller):
         with pytest.raises(errors.RunaiBuildModelError) as exc_info:
             controller.update(
-                nodepool_id=1,
-                labelKey="new_key",
-                labelValue="new_value",
-                placementStrategy={"cpu": "binpack", "gpu": "NONE"},
-                overProvisioningRatio=2,
+                asset_id=1,
+                name=None,
+                assets={"environment": "2","compute": "1"}
             )
 
         assert "Failed to build body scheme" in str(exc_info)
         controller.client.post.assert_not_called()
 
-    def test_update_labels(self, controller):
+    def test_update_compute(self, controller):
         mock_response = {"status code": 202, "message": "Accepted"}
         controller.client.put.return_value = mock_response
 
-        result = controller.update_labels(
-            nodepool_id=1, label_key="new_key", label_value="new_value"
+        result = controller.update(
+                asset_id=1,
+                name="update_template",
+                assets={"environment": "2","compute": "1"}
         )
 
         assert result == mock_response
         controller.client.put.assert_called_once()
 
-    def test_update_labels_bad_parameter(self, controller):
+    def test_update_compute_bad_parameter(self, controller):
 
         with pytest.raises(errors.RunaiBuildModelError) as exc_info:
-            controller.update_labels(
-                nodepool_id=1, label_key="new_key", label_value=None
+            controller.update(
+                asset_id=1,
+                name="update_template",
+                assets={"environment": "2","compute": 1}
             )
 
         assert "Failed to build body scheme" in str(exc_info)
         controller.client.post.assert_not_called()
 
     def test_delete(self, controller):
-        node_pool_id = 1
+        template_asset_id = 1
         mock_response = {"status code": 202, "message": "Accepted"}
         controller.client.delete.return_value = mock_response
 
-        result = controller.delete(nodepool_id=node_pool_id)
+        result = controller.delete(asset_id=template_asset_id)
 
         assert result == mock_response
         controller.client.delete.assert_called_once_with(
-            f"/v1/k8s/clusters/{controller.client.cluster_id}/node-pools/{node_pool_id}"
+            f"/api/v1/asset/workload-template/{template_asset_id}"
         )

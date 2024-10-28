@@ -621,7 +621,6 @@ class TemplateUpdateRequestMeta(BaseModel):
     name: str
 
 
-
 class TemplateUpdateRequest(BaseModel):
     meta: TemplateUpdateRequestMeta
     spec: TemplateCreateRequestAsset

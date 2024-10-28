@@ -92,8 +92,9 @@ class TemplateController(Controller):
         Used to update node pool fields that are not labels
         For labels, please use update_labels method
 
-        placementStrategy example:
-        {"gpu": "binpack", "cpu": "binpack"}
+        assets example:
+        {"environment": "1f21043c-3a8a-4049-bd62-4c3135545178",
+        "compute": "bbe5a6d1-1c63-4448-b534-036514f8b756"}
         """
         path = f"{self.path}/{asset_id}"
 
@@ -113,6 +114,12 @@ class TemplateController(Controller):
         payload = template_request.model_dump_json()
 
         return self.client.put(path, payload)
+
+    def delete(self, asset_id: int):
+        path = f"/api/v1/asset/workload-template/{asset_id}"
+
+        resp = self.client.delete(path)
+        return resp
     
 
 class ComputeController(Controller):
