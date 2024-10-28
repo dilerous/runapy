@@ -50,14 +50,15 @@ class TemplateController(Controller):
         assets: dict,
     ):
         """
-        placementStrategy example:
-        {"gpu": "binpack", "cpu": "binpack"}
+        assets example:
+        {"environment": "1f21043c-3a8a-4049-bd62-4c3135545178",
+        "compute": "bbe5a6d1-1c63-4448-b534-036514f8b756"}
         """
         data = {
             "meta": {
                 "name": name,
                 "scope": scope,
-                "clusterId": "dd56cdc9-5a36-462f-80a7-1f61eb6b61a7"
+                "clusterId": self.client.cluster_id
             },
 
             "spec": {
@@ -69,6 +70,49 @@ class TemplateController(Controller):
         payload = template.model_dump_json()
 
         return self.client.post(self.path, payload)
+
+    def get_by_name(self, template_name: str):
+        templates = self.all()
+
+        template = next(
+            (entry for entry in templates['entries'] 
+            if entry['meta']['name'] == template_name),
+            None
+        )
+        
+        return template
+
+    def update(
+        self,
+        asset_id: str,
+        name: str,
+        assets: dict,
+    ):
+        """
+        Used to update node pool fields that are not labels
+        For labels, please use update_labels method
+
+        placementStrategy example:
+        {"gpu": "binpack", "cpu": "binpack"}
+        """
+        path = f"{self.path}/{asset_id}"
+
+        data = {
+            "meta": {
+                "name": name,
+            },
+            "spec": {
+                "assets": assets,
+            }
+        }
+
+        template_request = models.build_model(
+            model=models.TemplateUpdateRequest, data=data
+        )
+
+        payload = template_request.model_dump_json()
+
+        return self.client.put(path, payload)
     
 
 class ComputeController(Controller):
@@ -84,9 +128,14 @@ class ComputeController(Controller):
     def get_by_name(self, compute_name: str):
         computes = self.all()
 
-        compute = next((entry for entry in computes['entries'] if entry['meta']['name'] == compute_name), None)
+        compute = next(
+            (entry for entry in computes['entries'] 
+            if entry['meta']['name'] == compute_name),
+            None
+        )
         
         return compute
+
 
 
 class EnvironmentController(Controller):

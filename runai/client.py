@@ -254,7 +254,7 @@ class RunaiClient:
         return controllers.ComputeController(self)
 
     @property
-    def environment(self) -> controllers.EnvironmentController:
+    def environments(self) -> controllers.EnvironmentController:
         return controllers.EnvironmentController(self)
 
     @property

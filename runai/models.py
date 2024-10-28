@@ -588,6 +588,7 @@ class AssetMetaRequest(BaseModel):
     departmentId: Optional[str] = None
     projectId: Optional[str] = None
     autoDelete: Optional[bool] = False
+    
 
 
 class S3CreateRequestSpec(BaseModel):
@@ -604,7 +605,7 @@ class S3CreateRequest(BaseModel):
 
 class TemplateCreateRequestSpec(BaseModel):
     environment: str
-    compute: str
+    compute: Optional[str] = None
 
 
 class TemplateCreateRequestAsset(BaseModel):
@@ -613,6 +614,16 @@ class TemplateCreateRequestAsset(BaseModel):
 
 class TemplateCreateRequest(BaseModel):
     meta: AssetMetaRequest
+    spec: TemplateCreateRequestAsset
+
+
+class TemplateUpdateRequestMeta(BaseModel):
+    name: str
+
+
+
+class TemplateUpdateRequest(BaseModel):
+    meta: TemplateUpdateRequestMeta
     spec: TemplateCreateRequestAsset
 
 

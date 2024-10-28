@@ -21,10 +21,29 @@ cpu_id = client.compute.get_by_name(compute_name="cpu-only")
 
 # Create a template named test4 with the compute cpu-only and the jupyter_lab environment
 print(client.templates.create(
-    name="test4",
+    name="my-template",
     scope="cluster",
     assets = {
         "environment": jupyter_lab['meta']['id'],
         "compute": cpu_id['meta']['id']
+    }
+))
+
+# Get template asset ID by name
+test1 = client.templates.get_by_name(template_name="my-template")
+asset = test1['meta']['id']
+print(asset)
+
+# Get new compute asset ID by name
+cpu_only = client.compute.get_by_name(compute_name="cpu-only")
+compute_id = cpu_only['meta']['id']
+
+# Update a template named test4 with the compute cpu-only and the jupyter_lab environment
+print(client.templates.update(
+    name="test1",
+    asset_id=asset,
+    assets = {
+        "environment": id,
+        "compute": compute_id
     }
 ))
