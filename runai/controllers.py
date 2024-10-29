@@ -116,7 +116,7 @@ class TemplateController(Controller):
         return self.client.put(path, payload)
 
     def delete(self, asset_id: int):
-        path = f"/api/v1/asset/workload-template/{asset_id}"
+        path = f"{self.path}/{asset_id}"
 
         resp = self.client.delete(path)
         return resp

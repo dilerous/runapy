@@ -606,6 +606,7 @@ class S3CreateRequest(BaseModel):
 class TemplateCreateRequestSpec(BaseModel):
     environment: str
     compute: Optional[str] = None
+    workloadVolumes: Optional[List[str]] = None
 
 
 class TemplateCreateRequestAsset(BaseModel):

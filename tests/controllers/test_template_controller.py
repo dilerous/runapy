@@ -66,7 +66,8 @@ class TestTemplateController:
         name="my-template"
         scope="cluster"
         assets = {"environment": "1f21043c-3a8a-4049-bd62-4c3135545178",
-        "compute": "bbe5a6d1-1c63-4448-b534-036514f8b756"}
+        "compute": "bbe5a6d1-1c63-4448-b534-036514f8b756",
+        "workloadVolumes": None}
 
         expected_payload = {"meta": {"name": name, "scope": scope, "workloadSupportedTypes": None, 
         "description": None, "clusterId": cluster_id, "departmentId": None,
