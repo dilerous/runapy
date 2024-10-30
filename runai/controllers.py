@@ -48,6 +48,7 @@ class TemplateController(Controller):
         name: str,
         scope: str,
         assets: dict,
+        specificenv: Optional[dict] = None,
     ):
         """
         assets example:
@@ -63,6 +64,7 @@ class TemplateController(Controller):
 
             "spec": {
                 "assets": assets,
+                "specificEnv": specificenv,
             }
         }
 
@@ -87,6 +89,7 @@ class TemplateController(Controller):
         asset_id: str,
         name: str,
         assets: dict,
+        specificenv: Optional[dict] = None,
     ):
         """
         Used to update node pool fields that are not labels
@@ -104,6 +107,7 @@ class TemplateController(Controller):
             },
             "spec": {
                 "assets": assets,
+                "specificEnv": specificenv,
             }
         }
 
@@ -144,7 +148,6 @@ class ComputeController(Controller):
         return compute
 
 
-
 class EnvironmentController(Controller):
     def __init__(self, client):
         super().__init__(client)
@@ -158,9 +161,14 @@ class EnvironmentController(Controller):
     def get_by_name(self, environment_name: str):
         environments = self.all()
 
-        environment = next((entry for entry in environments['entries'] if entry['meta']['name'] == environment_name), None)
+        environment = next(
+            (entry for entry in environments['entries'] 
+            if entry['meta']['name'] == environment_name), 
+            None
+        )
         
         return environment
+
 
 class NodePoolController(Controller):
     def __init__(self, client):

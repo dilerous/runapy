@@ -512,7 +512,7 @@ class WorkspaceWorkloadSpec(WorkloadBaseSpec):
     )
 
 
-class WorkspaceCreateRequest(BaseModel):
+class WorkspaceCreateRequest(BaseModel):    
     name: str
     projectId: str
     clusterId: str
@@ -603,19 +603,44 @@ class S3CreateRequest(BaseModel):
     spec: S3CreateRequestSpec
 
 
-class TemplateCreateRequestSpec(BaseModel):
-    environment: str
-    compute: Optional[str] = None
-    workloadVolumes: Optional[List[str]] = None
+class Datasource(BaseModel):
+    id: str  # UUID type ensures valid UUIDs
+    name: Optional[str] = None
+    kind: str
+
+
+class TemplateCreateRequestSpecificEnv(BaseModel):
+    command: Optional[str] = None
+    args: Optional[str] = None
+    runAsUid: Optional[int] = None
+    runAsGid: Optional[int] = None
+    supplementalGroups: Optional[str] = None
+    nodeType: Optional[str] = None
+    nodePools: Optional[List[str]] = None
+    podAffinity: Optional[PodAffinity] = None
+    terminateAfterPreemption: Optional[bool] = None
+    autoDeletionTimeAfterCompletionSeconds: Optional[int] = None
+    backoffLimit: Optional[int] = None
+    annotations: Optional[List[Annotations]] = None
+    labels: Optional[List[Labels]] = None
+    allowOverQuota: Optional[bool] = None
 
 
 class TemplateCreateRequestAsset(BaseModel):
-    assets: TemplateCreateRequestSpec
+    environment: str
+    compute: Optional[str] = None
+    datasources: Optional[List[Datasource]] = None
+    workloadVolumes: Optional[List[str]] = None
+
+
+class TemplateCreateRequestSpec(BaseModel):
+    assets: TemplateCreateRequestAsset
+    specificEnv: Optional[TemplateCreateRequestSpecificEnv] = None
 
 
 class TemplateCreateRequest(BaseModel):
     meta: AssetMetaRequest
-    spec: TemplateCreateRequestAsset
+    spec: TemplateCreateRequestSpec
 
 
 class TemplateUpdateRequestMeta(BaseModel):
@@ -624,7 +649,7 @@ class TemplateUpdateRequestMeta(BaseModel):
 
 class TemplateUpdateRequest(BaseModel):
     meta: TemplateUpdateRequestMeta
-    spec: TemplateCreateRequestAsset
+    spec: TemplateCreateRequestSpec
 
 
 class AccessKeyRequestSpec(BaseModel):

@@ -60,18 +60,19 @@ class TestTemplateController:
             "/api/v1/asset/workload-template"
         )
 
-
     def test_create(self, controller):
         cluster_id = controller.client.cluster_id
         name="my-template"
         scope="cluster"
         assets = {"environment": "1f21043c-3a8a-4049-bd62-4c3135545178",
         "compute": "bbe5a6d1-1c63-4448-b534-036514f8b756",
-        "workloadVolumes": None}
+        "datasources": None,
+        "workloadVolumes": None
+        }
 
         expected_payload = {"meta": {"name": name, "scope": scope, "workloadSupportedTypes": None, 
         "description": None, "clusterId": cluster_id, "departmentId": None,
-        "projectId": None,"autoDelete": False}, "spec": {"assets": assets}}
+        "projectId": None,"autoDelete": False}, "spec": {"assets": assets, "specificEnv": None}}
         # Trim spaces to match actual json string payload
         expected_payload = json.dumps(expected_payload).replace(" ", "")
 
@@ -98,13 +99,13 @@ class TestTemplateController:
         controller.client.post.assert_not_called()
 
     def test_update(self, controller):
-        mock_response = {"asset_id": 1, "name": "updated_template"}
+        mock_response = {"id": 1, "name": "updated_template"}
         controller.client.put.return_value = mock_response
 
         result = controller.update(
             asset_id=1,
             name="updated_template",
-            assets={"environment": "2","compute": "1"}
+            assets={"environment": "2", "compute": "1"}
         )
 
         assert result == mock_response
