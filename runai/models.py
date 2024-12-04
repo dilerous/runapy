@@ -590,7 +590,6 @@ class AssetMetaRequest(BaseModel):
     autoDelete: Optional[bool] = False
     
 
-
 class S3CreateRequestSpec(BaseModel):
     bucket: str
     path: str

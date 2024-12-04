@@ -52,8 +52,42 @@ class TemplateController(Controller):
     ):
         """
         assets example:
-        {"environment": "1f21043c-3a8a-4049-bd62-4c3135545178",
-        "compute": "bbe5a6d1-1c63-4448-b534-036514f8b756"}
+        "environment": "1f21043c-3a8a-4049-bd62-4c3135545178",
+        "compute": "bbe5a6d1-1c63-4448-b534-036514f8b756",
+        "datasources": [id: 1, kind: "accessKey"],
+        "workloadVolumes": "my-volume"
+
+        specificEnv example:
+        "command": "python",
+        "args": "-x my-script.py",
+        "runAsUid": 500,
+        "runAsGid": 30,
+        "supplementalGroups": "2,3,5,8",
+        "environmentVariables": [
+        {}
+        ],
+        "nodeType": "my-node-type",
+        "nodePools": [
+        "my-node-pool-a",
+        "my-node-pool-b"
+        ],
+        "podAffinity": {
+        "type": "Required",
+        "key": "string"
+        },
+        "terminateAfterPreemption": false,
+        "autoDeletionTimeAfterCompletionSeconds": 15,
+        "backoffLimit": 3,
+        "annotations": [
+        {}
+        ],
+        "labels": [
+        {
+        "name": "stage",
+        "value": "initial-research",
+        "exclude": false
+        }
+        ],
         """
         data = {
             "meta": {
@@ -92,13 +126,55 @@ class TemplateController(Controller):
         specificenv: Optional[dict] = None,
     ):
         """
-        Used to update node pool fields that are not labels
-        For labels, please use update_labels method
+        Used to update an existing template. 
 
         assets example:
-        {"environment": "1f21043c-3a8a-4049-bd62-4c3135545178",
-        "compute": "bbe5a6d1-1c63-4448-b534-036514f8b756"}
+        "environment": "1f21043c-3a8a-4049-bd62-4c3135545178",
+        "compute": "bbe5a6d1-1c63-4448-b534-036514f8b756"
+        "datasources": [id: 1, kind: "accessKey"]
+        "workloadVolumes": "my-volume"
+
+        specificEnv example:
+        "command": "python",
+        "args": "-x my-script.py",
+        "runAsUid": 500,
+        "runAsGid": 30,
+        "supplementalGroups": "2,3,5,8",
+        "environmentVariables": [
+            {"name": "HOME",
+            "value": "/home/my-folder",
+            "secret": {
+                "name": "postgress_secret",
+                "key": "POSTGRES_PASSWORD"
+            },
+            "exclude": false}
+        ],
+        "nodeType": "my-node-type",
+        "nodePools": [
+        "my-node-pool-a",
+        "my-node-pool-b"
+        ],
+        "podAffinity": {
+        "type": "Required",
+        "key": "string"
+        },
+        "terminateAfterPreemption": false,
+        "autoDeletionTimeAfterCompletionSeconds": 15,
+        "backoffLimit": 3,
+        "annotations": [
+            {"name": "billing",
+            "value": "my-billing-unit",
+            "exclude": false}
+        ],
+        "labels": [
+        {
+        "name": "stage",
+        "value": "initial-research",
+        "exclude": false
+        }
+        ],
         """
+
         path = f"{self.path}/{asset_id}"
 
         data = {

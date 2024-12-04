@@ -64,10 +64,11 @@ class TestTemplateController:
         cluster_id = controller.client.cluster_id
         name="my-template"
         scope="cluster"
-        assets = {"environment": "1f21043c-3a8a-4049-bd62-4c3135545178",
-        "compute": "bbe5a6d1-1c63-4448-b534-036514f8b756",
-        "datasources": None,
-        "workloadVolumes": None
+        assets = {
+            "environment": "1f21043c-3a8a-4049-bd62-4c3135545178",
+            "compute": "bbe5a6d1-1c63-4448-b534-036514f8b756",
+            "datasources": None,
+            "workloadVolumes": None
         }
 
         expected_payload = {"meta": {"name": name, "scope": scope, "workloadSupportedTypes": None, 
@@ -92,8 +93,13 @@ class TestTemplateController:
             controller.create(
                 name="my-template",
                 scope=None,
-                assets = {"environment": "1f21043c-3a8a-4049-bd62-4c3135545178",
-                "compute": "bbe5a6d1-1c63-4448-b534-036514f8b756"},
+                 assets={
+                    "environment": "2",
+                    "compute": "1"
+                },
+                specificenv = {
+                    "command": "echo 'hello world'"
+                }
             )
         assert "Failed to build body scheme" in str(exc_info)
         controller.client.post.assert_not_called()
@@ -105,7 +111,13 @@ class TestTemplateController:
         result = controller.update(
             asset_id=1,
             name="updated_template",
-            assets={"environment": "2", "compute": "1"}
+             assets={
+                    "environment": "2",
+                    "compute": "1"
+                },
+                specificenv = {
+                    "command": "echo 'hello world'"
+                }
         )
 
         assert result == mock_response
@@ -116,7 +128,13 @@ class TestTemplateController:
             controller.update(
                 asset_id=1,
                 name=None,
-                assets={"environment": "2","compute": "1"}
+                assets={
+                    "environment": "2",
+                    "compute": "1"
+                },
+                specificenv = {
+                    "command": "echo 'hello world'"
+                }
             )
 
         assert "Failed to build body scheme" in str(exc_info)
@@ -129,7 +147,27 @@ class TestTemplateController:
         result = controller.update(
                 asset_id=1,
                 name="update_template",
-                assets={"environment": "2","compute": "1"}
+                assets={
+                    "environment": "2",
+                    "compute": "1"
+                }
+        )
+
+        assert result == mock_response
+        controller.client.put.assert_called_once()
+
+    def test_update_compute_with_specificenv(self, controller):
+        mock_response = {"status code": 202, "message": "Accepted"}
+        controller.client.put.return_value = mock_response
+
+        result = controller.update(
+                asset_id=1,
+                name="update_template",
+                assets={
+                    "environment": "2",
+                    "compute": "1"
+                },
+                specificenv={"command": "echo 'hello world'"}
         )
 
         assert result == mock_response
@@ -141,7 +179,23 @@ class TestTemplateController:
             controller.update(
                 asset_id=1,
                 name="update_template",
-                assets={"environment": "2","compute": 1}
+                assets={"environment": "2",
+                "compute": 1}
+            )
+
+        assert "Failed to build body scheme" in str(exc_info)
+        controller.client.post.assert_not_called()
+
+    def test_update_compute_bad_parameter_specificenv(self, controller):
+        with pytest.raises(errors.RunaiBuildModelError) as exc_info:
+            controller.update(
+                asset_id=1,
+                name="update_template",
+                assets={
+                    "environment": "2",
+                    "compute": "1"
+                },
+                specificenv={"command": 1}
             )
 
         assert "Failed to build body scheme" in str(exc_info)
@@ -158,3 +212,4 @@ class TestTemplateController:
         controller.client.delete.assert_called_once_with(
             f"/api/v1/asset/workload-template/{template_asset_id}"
         )
+
